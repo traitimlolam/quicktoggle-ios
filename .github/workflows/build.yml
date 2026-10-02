@@ -50,14 +50,14 @@ jobs:
           mv QuickToggle.ipa output/
           ls -la output/
 
-      - name: Create GitHub Release v1.0.1
+      - name: Create GitHub Release v1.0.2
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.0.1
-          name: "QuickToggle v1.0.1 - Đầy Đủ Icon & Giao Diện 1 Chạm"
+          tag_name: v1.0.2
+          name: "QuickToggle v1.0.2 - Đầy Đủ Icon & Giao Diện 1 Chạm"
           body: |
-            ## ⚡ QuickToggle v1.0.1
+            ## ⚡ QuickToggle v1.0.2
             - Bổ sung trọn bộ AppIcon Retina 3D và Info.plist chuẩn.
             - Điều khiển Wi-Fi & 3G/4G trực tiếp từ màn hình chính cho iPhone của Sếp.
           files: output/*.ipa
