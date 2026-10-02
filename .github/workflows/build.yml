@@ -28,7 +28,7 @@ jobs:
         run: |
           make clean all FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           
-      - name: Package IPA
+      - name: Package IPA with Icons and Info.plist
         run: |
           mkdir -p Payload
           APP_PATH=$(find .theos/ -name "QuickToggle.app" -type d | head -n 1)
@@ -39,27 +39,25 @@ jobs:
           fi
           echo "Found app at: $APP_PATH"
           cp -r "$APP_PATH" Payload/
+          
+          # Ensure Info.plist and icons are inside Payload/QuickToggle.app
+          cp Resources/Info.plist Payload/QuickToggle.app/Info.plist
+          cp Resources/*.png Payload/QuickToggle.app/
+          rm -rf Payload/QuickToggle.app/*.dSYM
+          
           zip -qr9 QuickToggle.ipa Payload/
           mkdir -p output
           mv QuickToggle.ipa output/
           ls -la output/
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: QuickToggle-IPA
-          path: output/QuickToggle.ipa
-
-      - name: Create GitHub Release v1.0.0
+      - name: Create GitHub Release v1.0.1
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.0.0
-          name: "QuickToggle v1.0.0 - Bật Tắt Wi-Fi & 3G/4G 1 Chạm"
+          tag_name: v1.0.1
+          name: "QuickToggle v1.0.1 - Đầy Đủ Icon & Giao Diện 1 Chạm"
           body: |
-            ## ⚡ QuickToggle v1.0.0 (Bật Tắt Mạng 1 Chạm)
-            - Ứng dụng điều khiển Wi-Fi và Dữ liệu di động (3G/4G/LTE) trực tiếp từ màn hình chính.
-            - Tích hợp phím tắt chuyển đổi nhanh (Chỉ dùng Wi-Fi, Chỉ dùng 4G, Mở Hotspot).
-            - Thiết kế icon 3D chuyên biệt và giao diện Dark/Light mode chuẩn iOS 16.
-            - Hỗ trợ cài qua TrollStore hoặc máy Jailbreak.
+            ## ⚡ QuickToggle v1.0.1
+            - Bổ sung trọn bộ AppIcon Retina 3D và Info.plist chuẩn.
+            - Điều khiển Wi-Fi & 3G/4G trực tiếp từ màn hình chính cho iPhone của Sếp.
           files: output/*.ipa
