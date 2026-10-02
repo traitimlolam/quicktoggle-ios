@@ -1,0 +1,65 @@
+name: Build QuickToggle IPA & DEB
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build QuickToggle Application
+    runs-on: macos-14
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Theos (RootHide/Rootless)
+        uses: waruhachi/theos-action@v2.4.10
+        with:
+          theos-src: 'roothide/theos'
+          theos-branch: 'master'
+          sdks-src: 'theos/sdks'
+          sdks-branch: 'master'
+
+      - name: Build Application
+        run: |
+          make clean all FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          APP_PATH=$(find .theos/ -name "QuickToggle.app" -type d | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Error: QuickToggle.app not found!"
+            find .theos -maxdepth 4
+            exit 1
+          fi
+          echo "Found app at: $APP_PATH"
+          cp -r "$APP_PATH" Payload/
+          zip -qr9 QuickToggle.ipa Payload/
+          mkdir -p output
+          mv QuickToggle.ipa output/
+          ls -la output/
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuickToggle-IPA
+          path: output/QuickToggle.ipa
+
+      - name: Create GitHub Release v1.0.0
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
+        with:
+          tag_name: v1.0.0
+          name: "QuickToggle v1.0.0 - Bật Tắt Wi-Fi & 3G/4G 1 Chạm"
+          body: |
+            ## ⚡ QuickToggle v1.0.0 (Bật Tắt Mạng 1 Chạm)
+            - Ứng dụng điều khiển Wi-Fi và Dữ liệu di động (3G/4G/LTE) trực tiếp từ màn hình chính.
+            - Tích hợp phím tắt chuyển đổi nhanh (Chỉ dùng Wi-Fi, Chỉ dùng 4G, Mở Hotspot).
+            - Thiết kế icon 3D chuyên biệt và giao diện Dark/Light mode chuẩn iOS 16.
+            - Hỗ trợ cài qua TrollStore hoặc máy Jailbreak.
+          files: output/*.ipa
