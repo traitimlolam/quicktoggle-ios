@@ -183,8 +183,7 @@
     UILabel *footer = [[UILabel alloc] initWithFrame:CGRectMake(16, y, w, 40)];
     footer.numberOfLines = 2;
     footer.textAlignment = NSTextAlignmentCenter;
-    footer.text = @"Dành riêng cho iPhone Sếp Hiếu • iOS 16
-Hỗ trợ TrollStore & Máy Jailbreak";
+    footer.text = @"Dành riêng cho iPhone Sếp Hiếu • iOS 16\nNhấn để điều khiển Wi-Fi & 3G/4G tức thì";
     footer.font = [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
     footer.textColor = [UIColor secondaryLabelColor];
     [self.scrollView addSubview:footer];
